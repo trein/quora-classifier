@@ -21,7 +21,18 @@ def extract(file):
         targets.append(target_i)
         features.append(feature_i)
 
-    return (np.array(features).astype(np.float), np.array(targets).astype(np.int))
+    matrix_features = np.array(features).astype(np.float)
+
+    max_features = matrix_features.max(axis = 0)
+    max_features = (max_features + (max_features == 0))
+
+    normal_matrix_features = matrix_features / max_features
+    vector_targets = np.array(targets).astype(np.int)
+
+    # print normal_matrix_features
+    # print "Max", max_features
+
+    return (normal_matrix_features, vector_targets)
 
 def accuracy(targets_hat, targets):
     return (1.0 * (targets_hat == targets)).sum(0) / targets.shape

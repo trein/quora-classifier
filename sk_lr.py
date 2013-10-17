@@ -9,7 +9,7 @@ from sklearn import linear_model
 classifier = linear_model.LogisticRegression(C = 1e5, tol = 0.0001)
 classifier.fit(features, targets)
 
-target_test_hat = classifier.predict(features_test)
-accuracy = mh.accuracy(target_test_hat, targets_test)
+targets_test_hat = classifier.predict(features_test)
+accuracy = mh.accuracy(targets_test_hat, targets_test)
 
-print accuracy
+print "Accuracy:", accuracy
