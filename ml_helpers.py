@@ -22,3 +22,6 @@ def extract(file):
         features.append(feature_i)
 
     return (np.array(features).astype(np.float), np.array(targets).astype(np.int))
+
+def accuracy(targets_hat, targets):
+    return (1.0 * (targets_hat == targets)).sum(0) / targets.shape
