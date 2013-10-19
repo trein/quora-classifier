@@ -6,8 +6,8 @@ import quora_classifiers as qc
 # -------------------------------------------------------------------------
 def test_raw_dataset(train_filename, valid_filename):
     test_name = "raw dataset"
-    (all_features, all_targets) = mh.extract_all(train_filename)
-    (valid_features, valid_targets) = mh.extract_all(valid_filename)
+    (all_features, all_targets) = mh.extract(train_filename)
+    (valid_features, valid_targets) = mh.extract(valid_filename)
     test_classifiers(all_features, all_targets, valid_features, valid_targets, test_name)
 
 # -------------------------------------------------------------------------
@@ -15,8 +15,8 @@ def test_raw_dataset(train_filename, valid_filename):
 # -------------------------------------------------------------------------
 def test_selected_dataset(train_filename, valid_filename):
     test_name = "raw dataset with feature selection"
-    (all_features, all_targets) = mh.extract_selected_all(train_filename)
-    (valid_features, valid_targets) = mh.extract_selected_all(valid_filename)
+    (all_features, all_targets) = mh.extract_selected(train_filename)
+    (valid_features, valid_targets) = mh.extract_selected(valid_filename)
     test_classifiers(all_features, all_targets, valid_features, valid_targets, test_name)
 
 # -------------------------------------------------------------------------
@@ -24,8 +24,8 @@ def test_selected_dataset(train_filename, valid_filename):
 # -------------------------------------------------------------------------
 def test_normalized_dataset(train_filename, valid_filename):
     test_name = "normalized dataset"
-    (all_features, all_targets) = mh.extract_normalized_all(train_filename)
-    (valid_features, valid_targets) = mh.extract_normalized_all(valid_filename)
+    (all_features, all_targets) = mh.extract_normalized(train_filename)
+    (valid_features, valid_targets) = mh.extract_normalized(valid_filename)
     test_classifiers(all_features, all_targets, valid_features, valid_targets, test_name)
 
 # -------------------------------------------------------------------------
@@ -33,8 +33,8 @@ def test_normalized_dataset(train_filename, valid_filename):
 # -------------------------------------------------------------------------
 def test_normalized_selected_dataset(train_filename, valid_filename):
     test_name = "normalized dataset with feature selection"
-    (all_features, all_targets) = mh.extract_normalized_selected_all(train_filename)
-    (valid_features, valid_targets) = mh.extract_normalized_selected_all(valid_filename)
+    (all_features, all_targets) = mh.extract_normalized_selected(train_filename)
+    (valid_features, valid_targets) = mh.extract_normalized_selected(valid_filename)
     test_classifiers(all_features, all_targets, valid_features, valid_targets, "")
 
 def test_classifiers(all_features, all_targets, valid_features, valid_targets, test_name):

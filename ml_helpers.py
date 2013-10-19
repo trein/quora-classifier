@@ -1,24 +1,26 @@
 import numpy as np
 import re
 
-def extract_all(filename):
+EXCLUDED_FEATURES = [0, 8, 9, 2, 21, 22]
+
+def extract(filename):
     return extract(filename)
 
-def extract_selected_all(filename):
-    matrix_features, vector_targets = extract_all(filename)
-    sel_matrix_features = np.delete(matrix_features, [0, 8, 9, 2, 21, 22], 1)
+def extract_selected(filename):
+    matrix_features, vector_targets = extract(filename)
+    sel_matrix_features = np.delete(matrix_features, EXCLUDED_FEATURES, 1)
 
     return (sel_matrix_features, vector_targets)
 
-def extract_normalized_all(filename):
-    matrix_features, vector_targets = extract_all(filename)
+def extract_normalized(filename):
+    matrix_features, vector_targets = extract(filename)
     normal_matrix_features = normalize_features(matrix_features)
 
     return (normal_matrix_features, vector_targets)
 
-def extract_normalized_selected_all(filename):
-    matrix_features, vector_targets = extract_normalized_all(filename)
-    sel_matrix_features = np.delete(matrix_features, [0, 8, 9, 2, 21, 22], 1)
+def extract_normalized_selected(filename):
+    matrix_features, vector_targets = extract_normalized(filename)
+    sel_matrix_features = np.delete(matrix_features, EXCLUDED_FEATURES, 1)
 
     return (sel_matrix_features, vector_targets)
 
