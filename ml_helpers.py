@@ -1,23 +1,23 @@
 import numpy as np
 import re
 
-def extract_all():
-    return extract('dataset/data.txt')
+def extract_all(filename):
+    return extract(filename)
 
-def extract_selected_all():
-    matrix_features, vector_targets = extract_all()
+def extract_selected_all(filename):
+    matrix_features, vector_targets = extract_all(filename)
     sel_matrix_features = np.delete(matrix_features, [0, 8, 9, 2, 21, 22], 1)
 
     return (sel_matrix_features, vector_targets)
 
-def extract_normalized_all():
-    matrix_features, vector_targets = extract_all()
+def extract_normalized_all(filename):
+    matrix_features, vector_targets = extract_all(filename)
     normal_matrix_features = normalize_features(matrix_features)
 
     return (normal_matrix_features, vector_targets)
 
-def extract_normalized_selected_all():
-    matrix_features, vector_targets = extract_normalized_all()
+def extract_normalized_selected_all(filename):
+    matrix_features, vector_targets = extract_normalized_all(filename)
     sel_matrix_features = np.delete(matrix_features, [0, 8, 9, 2, 21, 22], 1)
 
     return (sel_matrix_features, vector_targets)

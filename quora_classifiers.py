@@ -20,10 +20,16 @@ class QuoraClassifier:
     def train(self):
         self.classifier.fit(self.train_features(), self.train_targets())
 
-    def accuracy(self):
-        return "{ simple: %s, cross: %s }" % (self.simple_score(), self.cross_score())
+    def accuracy(self, valid_features, valid_targets):
+        valid_score = self.valid_score(valid_features, valid_targets)
+        test_score = self.test_score()
+        cross_score = self.cross_score()
+        return "{ valid: %.4f  test: %.4f  cross: %s }" % (valid_score, test_score, cross_score)
 
-    def simple_score(self):
+    def valid_score(self, valid_features, valid_targets):
+        return self.classifier.score(valid_features, valid_targets)
+
+    def test_score(self):
         return self.classifier.score(self.test_features(), self.test_targets())
 
     def cross_score(self):
