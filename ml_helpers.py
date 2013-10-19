@@ -1,40 +1,28 @@
 import numpy as np
 import re
 
-def extract_train():
-    return extract('dataset/data.txt', [0, 3500])
-
-def extract_test():
-    return extract('dataset/data.txt', [3501, 4500])
-
 def extract_all():
-    return extract('dataset/data.txt', [0, 4500])
+    return extract('dataset/data.txt')
 
-def extract_normalized_train():
-    matrix_features, vector_targets = extract_train()
+def extract_selected_all():
+    matrix_features, vector_targets = extract_all()
+    sel_matrix_features = np.delete(matrix_features, [0, 8, 9, 2, 21, 22], 1)
+
+    return (sel_matrix_features, vector_targets)
+
+def extract_normalized_all():
+    matrix_features, vector_targets = extract_all()
     normal_matrix_features = normalize_features(matrix_features)
 
     return (normal_matrix_features, vector_targets)
 
-def extract_normalized_test():
-    matrix_features, vector_targets = extract_test()
-    normal_matrix_features = normalize_features(matrix_features)
-
-    return (normal_matrix_features, vector_targets)
-
-def extract_selected_train():
-    matrix_features, vector_targets = extract_normalized_train()
-    sel_matrix_features = np.delete(matrix_features, [21, 22], 1)
+def extract_normalized_selected_all():
+    matrix_features, vector_targets = extract_normalized_all()
+    sel_matrix_features = np.delete(matrix_features, [0, 8, 9, 2, 21, 22], 1)
 
     return (sel_matrix_features, vector_targets)
 
-def extract_selected_test():
-    matrix_features, vector_targets = extract_normalized_test()
-    sel_matrix_features = np.delete(matrix_features, [21, 22], 1)
-    
-    return (sel_matrix_features, vector_targets)
-
-def extract(file, index):
+def extract(file):
     input_file = open(file)
     traindata = input_file.readlines()
     features = []
@@ -51,7 +39,7 @@ def extract(file, index):
     matrix_features = np.array(features).astype(np.float)
     vector_targets = np.array(targets).astype(np.int)
 
-    return (matrix_features[index[0]:index[1]], vector_targets[index[0]:index[1]])
+    return (matrix_features, vector_targets)
 
 def normalize_features(matrix_features):
     max_features = matrix_features.max(axis = 0)
