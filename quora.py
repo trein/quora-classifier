@@ -1,5 +1,6 @@
 import ml_helpers as mh
 import quora_classifiers as qc
+from time import time
 
 # -------------------------------------------------------------------------
 # TEST: Raw dataset (no modification)
@@ -35,7 +36,7 @@ def test_normalized_selected_dataset(train_filename, valid_filename):
     test_name = "normalized dataset with feature selection"
     (all_features, all_targets) = mh.extract_normalized_selected(train_filename)
     (valid_features, valid_targets) = mh.extract_normalized_selected(valid_filename)
-    test_classifiers(all_features, all_targets, valid_features, valid_targets, "")
+    test_classifiers(all_features, all_targets, valid_features, valid_targets, test_name)
 
 def test_classifiers(all_features, all_targets, valid_features, valid_targets, test_name):
     names = [
@@ -60,10 +61,14 @@ def test_classifiers(all_features, all_targets, valid_features, valid_targets, t
     print "-"*80, "\n", "Test: %s" % test_name, "\n", "-"*80
     
     for name, clf in zip(names, classifiers):
+        start = time()
+        
         clf.train()
         accuracy = clf.accuracy(valid_features, valid_targets)
 
-        print "%s \t %s" % (name, accuracy)
+        elapsed = time() - start
+
+        print "%s \t %s \t (%.4f seconds)" % (name, accuracy, elapsed)
     print ""
 
 if __name__ == "__main__":
