@@ -7,6 +7,30 @@ def extract_train():
 def extract_test():
     return extract('dataset/test.txt')
 
+def extract_normalized_train():
+    matrix_features, vector_targets = extract_train()
+    normal_matrix_features = normalize_features(matrix_features)
+
+    return (normal_matrix_features, vector_targets)
+
+def extract_normalized_test():
+    matrix_features, vector_targets = extract_test()
+    normal_matrix_features = normalize_features(matrix_features)
+
+    return (normal_matrix_features, vector_targets)
+
+def extract_selected_train():
+    matrix_features, vector_targets = extract_normalized_train()
+    sel_matrix_features = np.delete(matrix_features, [21, 22], 1)
+
+    return (sel_matrix_features, vector_targets)
+
+def extract_selected_test():
+    matrix_features, vector_targets = extract_normalized_test()
+    sel_matrix_features = np.delete(matrix_features, [21, 22], 1)
+    
+    return (sel_matrix_features, vector_targets)
+
 def extract(file):
     input_file = open(file)
     traindata = input_file.readlines()
@@ -22,13 +46,9 @@ def extract(file):
         features.append(feature_i)
 
     matrix_features = np.array(features).astype(np.float)
-    normal_matrix_features = normalize_features(matrix_features)
     vector_targets = np.array(targets).astype(np.int)
 
-    # print normal_matrix_features
-    # print "Max", max_features
-
-    return (normal_matrix_features, vector_targets)
+    return (matrix_features, vector_targets)
 
 def normalize_features(matrix_features):
     max_features = matrix_features.max(axis = 0)
