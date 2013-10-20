@@ -46,6 +46,7 @@ def test_classifiers(all_features, all_targets, valid_features, valid_targets, t
         "DT",
         "KNN",
         "SVC",
+        "LDA",
         "QDA",
         ]
     classifiers = [
@@ -55,6 +56,7 @@ def test_classifiers(all_features, all_targets, valid_features, valid_targets, t
         qc.QuoraDT(all_features, all_targets),
         qc.QuoraKNN(all_features, all_targets),
         qc.QuoraSVC(all_features, all_targets),
+        qc.QuoraLDA(all_features, all_targets),
         qc.QuoraQDA(all_features, all_targets),
         ]
 

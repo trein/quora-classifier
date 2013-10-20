@@ -6,6 +6,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.qda import QDA
+from sklearn.lda import LDA
 from sklearn.svm import SVC
 
 class QuoraClassifier:
@@ -83,6 +84,12 @@ class QuoraSVC(QuoraClassifier):
         classifier = SVC(gamma = 2, C = 1)
         QuoraClassifier.__init__(self, classifier, all_features, all_targets)
 
+
+class QuoraLDA(QuoraClassifier):
+
+    def __init__(self, all_features, all_targets):
+        classifier = LDA()
+        QuoraClassifier.__init__(self, classifier, all_features, all_targets)
 
 class QuoraQDA(QuoraClassifier):
 
