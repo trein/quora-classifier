@@ -21,6 +21,7 @@ class QuoraClassifier:
 
     def train(self):
         self.classifier.fit(self.train_features(), self.train_targets())
+        print self.classifier.coef_
 
     def accuracy(self, valid_features, valid_targets):
         valid_score = self.valid_score(valid_features, valid_targets)
@@ -64,7 +65,7 @@ class QuoraGaussianNB(QuoraClassifier):
 class QuoraLR(QuoraClassifier):
 
     def __init__(self, all_features, all_targets):
-        classifier = LogisticRegression(C=1e5, tol=0.0001)
+        classifier = LogisticRegression(C=1e5, tol=0.001, fit_intercept=True)
         QuoraClassifier.__init__(self, classifier, all_features, all_targets)
 
 class QuoraDT(QuoraClassifier):

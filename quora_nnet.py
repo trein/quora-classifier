@@ -1,4 +1,3 @@
-# Inspired on code provided by Navdeep Jaitly (ndjaitly@gmail.com), 2013
 import quora_classifiers as qc
 import sys
 import numpy as np

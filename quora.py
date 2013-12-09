@@ -2,6 +2,7 @@ import ml_helpers as mh
 import feature_selection as selection
 import quora_classifiers as qc
 import quora_nnet as nnet
+import quora_lr as lr
 from time import time
 
 # -------------------------------------------------------------------------
@@ -68,30 +69,32 @@ def test_lasso_selected_dataset(train_filename, valid_filename):
 
 def test_classifiers(all_features, all_targets, valid_features, valid_targets, test_name):
     names = [
-        "NB M",
-        "NB G",
+        # "NB M",
+        # "NB G",
         "LR",
-        "DT",
-        "KNN",
-        "SVC",
-        "LDA",
-        "QDA",
-        "RFrst",
-        "ABoost",
-        "Nnet",
+        # "DT",
+        # "KNN",
+        # "SVM",
+        # "LDA",
+        # "QDA",
+        # "RFrst",
+        # "ABoost",
+        # "Nnet",
+        "ML-LR",
         ]
     classifiers = [
-        qc.QuoraMultiNB(all_features, all_targets),
-        qc.QuoraGaussianNB(all_features, all_targets),
+        # qc.QuoraMultiNB(all_features, all_targets),
+        # qc.QuoraGaussianNB(all_features, all_targets),
         qc.QuoraLR(all_features, all_targets),
-        qc.QuoraDT(all_features, all_targets),
-        qc.QuoraKNN(all_features, all_targets),
-        qc.QuoraSVC(all_features, all_targets),
-        qc.QuoraLDA(all_features, all_targets),
-        qc.QuoraQDA(all_features, all_targets),
-        qc.QuoraRandomForest(all_features, all_targets),
-        qc.QuoraAdaBoost(all_features, all_targets),
-        nnet.QuoraNnet(all_features, all_targets),
+        # qc.QuoraDT(all_features, all_targets),
+        # qc.QuoraKNN(all_features, all_targets),
+        # qc.QuoraSVC(all_features, all_targets),
+        # qc.QuoraLDA(all_features, all_targets),
+        # qc.QuoraQDA(all_features, all_targets),
+        # qc.QuoraRandomForest(all_features, all_targets),
+        # qc.QuoraAdaBoost(all_features, all_targets),
+        # nnet.QuoraNnet(all_features, all_targets),
+        lr.QuoraMlLR(all_features, all_targets)
         ]
 
     print "-"*80, "\n", "Test: %s" % test_name, "\n", "-"*80
@@ -114,5 +117,5 @@ if __name__ == "__main__":
     test_raw_dataset(train_filename, valid_filename)
     test_selected_dataset(train_filename, valid_filename)
     test_normalized_dataset(train_filename, valid_filename)
-    test_normalized_selected_dataset(train_filename, valid_filename)
-    test_lasso_selected_dataset(train_filename, valid_filename)
+    # test_normalized_selected_dataset(train_filename, valid_filename)
+    # test_lasso_selected_dataset(train_filename, valid_filename)
