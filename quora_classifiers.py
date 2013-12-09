@@ -1,17 +1,18 @@
-import numpy as np
 from sklearn.cross_validation import cross_val_score
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.qda import QDA
 from sklearn.lda import LDA
 from sklearn.svm import SVC
 
 class QuoraClassifier:
 
-    TRAIN_LIMIT = 3499
+    TRAIN_LIMIT = 3500
 
     def __init__(self, classifier, all_features, all_targets):
         self.classifier = classifier
@@ -34,7 +35,7 @@ class QuoraClassifier:
         return self.classifier.score(self.test_features(), self.test_targets())
 
     def cross_score(self):
-        return cross_val_score(self.classifier, self.all_features, self.all_targets, cv = 3)
+        return cross_val_score(self.classifier, self.all_features, self.all_targets, cv=3)
 
     def train_features(self):
         return self.all_features[0:QuoraClassifier.TRAIN_LIMIT]
@@ -51,7 +52,7 @@ class QuoraClassifier:
 class QuoraMultiNB(QuoraClassifier):
 
     def __init__(self, all_features, all_targets):
-        classifier = MultinomialNB(alpha = 0.1, class_prior = None, fit_prior = True)
+        classifier = MultinomialNB(alpha=0.1, class_prior=None, fit_prior=True)
         QuoraClassifier.__init__(self, classifier, all_features, all_targets)
 
 class QuoraGaussianNB(QuoraClassifier):
@@ -63,25 +64,25 @@ class QuoraGaussianNB(QuoraClassifier):
 class QuoraLR(QuoraClassifier):
 
     def __init__(self, all_features, all_targets):
-        classifier = LogisticRegression(C = 1e5, tol = 0.0001)
+        classifier = LogisticRegression(C=1e5, tol=0.0001)
         QuoraClassifier.__init__(self, classifier, all_features, all_targets)
 
 class QuoraDT(QuoraClassifier):
 
     def __init__(self, all_features, all_targets):
-        classifier = DecisionTreeClassifier(min_samples_split = 1, random_state=0)
+        classifier = DecisionTreeClassifier(min_samples_split=1, random_state=0)
         QuoraClassifier.__init__(self, classifier, all_features, all_targets)
 
 class QuoraKNN(QuoraClassifier):
 
     def __init__(self, all_features, all_targets):
-        classifier = KNeighborsClassifier(n_neighbors = 3)
+        classifier = KNeighborsClassifier(n_neighbors=3)
         QuoraClassifier.__init__(self, classifier, all_features, all_targets)
 
 class QuoraSVC(QuoraClassifier):
 
     def __init__(self, all_features, all_targets):
-        classifier = SVC(gamma = 2, C = 1)
+        classifier = SVC(gamma=2, C=1)
         QuoraClassifier.__init__(self, classifier, all_features, all_targets)
 
 
@@ -94,5 +95,17 @@ class QuoraLDA(QuoraClassifier):
 class QuoraQDA(QuoraClassifier):
 
     def __init__(self, all_features, all_targets):
-        classifier = QDA(reg_param = 0.5)
+        classifier = QDA(reg_param=0.5)
+        QuoraClassifier.__init__(self, classifier, all_features, all_targets)
+
+class QuoraRandomForest(QuoraClassifier):
+
+    def __init__(self, all_features, all_targets):
+        classifier = RandomForestClassifier(n_estimators=100)
+        QuoraClassifier.__init__(self, classifier, all_features, all_targets)
+
+class QuoraAdaBoost(QuoraClassifier):
+
+    def __init__(self, all_features, all_targets):
+        classifier = AdaBoostClassifier(n_estimators=100)
         QuoraClassifier.__init__(self, classifier, all_features, all_targets)
