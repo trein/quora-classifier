@@ -60,12 +60,17 @@ def test_normalized_selected_dataset(train_filename, valid_filename):
 def test_random_forest_selected_dataset(train_filename, valid_filename):
     test_name = "normalized and random forest feature selection"
     (all_features, all_targets) = mh.extract(train_filename)
-    (sel_features, sel_targets) = selection.extract_random_forest_features_indexes(all_features, all_targets)
+
+    features_to_keep = selection.extract_rf_features_indexes(all_features, all_targets)
+    (norm_features, norm_targets) = selection.extract_norm(all_features, all_targets)
+    (sel_features, sel_targets) = selection.extract_features(features_to_keep, norm_features, norm_targets)
 
     (valid_features, valid_targets) = mh.extract(valid_filename)
-    (sel_valid_features, sel_valid_targets) = selection.extract_random_forest_features_indexes(valid_features, valid_targets)
+    (norm_valid_features, norm_valid_targets) = selection.extract_norm(valid_features, valid_targets)
+    (sel_valid_features, sel_valid_targets) = selection.extract_features(features_to_keep, norm_valid_features, norm_valid_targets)
 
     test_classifiers(sel_features, sel_targets, sel_valid_features, sel_valid_targets, test_name)
+    print "RF to features keep:", features_to_keep
 
 # -------------------------------------------------------------------------
 # TEST: Normalized dataset and FOBA feature selection
@@ -73,62 +78,61 @@ def test_random_forest_selected_dataset(train_filename, valid_filename):
 def test_foba_selected_dataset(train_filename, valid_filename):
     test_name = "normalized and foba feature selection"
     (all_features, all_targets) = mh.extract(train_filename)
-    (sel_features, sel_targets) = selection.extract_foba_features_indexes(all_features, all_targets)
+
+    features_to_keep = selection.extract_foba_features_indexes(all_features, all_targets)
+    (norm_features, norm_targets) = selection.extract_norm(all_features, all_targets)
+    (sel_features, sel_targets) = selection.extract_features(features_to_keep, norm_features, norm_targets)
 
     (valid_features, valid_targets) = mh.extract(valid_filename)
-    (sel_valid_features, sel_valid_targets) = selection.extract_foba_features_indexes(valid_features, valid_targets)
+    (norm_valid_features, norm_valid_targets) = selection.extract_norm(valid_features, valid_targets)
+    (sel_valid_features, sel_valid_targets) = selection.extract_features(features_to_keep, norm_valid_features, norm_valid_targets)
 
     test_classifiers(sel_features, sel_targets, sel_valid_features, sel_valid_targets, test_name)
+    print "FOBA to features keep:", features_to_keep
 
 # -------------------------------------------------------------------------
-# TEST: Normalized dataset and Lasso feature selection
+# TEST: Raw dataset and Lasso feature selection
 # -------------------------------------------------------------------------
 def test_lasso_selected_dataset(train_filename, valid_filename):
-    test_name = "normalized dataset with Lasso feature selection"
+    test_name = "raw dataset with Lasso feature selection"
     (all_features, all_targets) = mh.extract(train_filename)
-    (norm_features, norm_targets) = selection.extract_norm(all_features, all_targets)
 
     features_to_keep = selection.extract_lasso_features_indexes(all_features, all_targets)
     (sel_features, sel_targets) = selection.extract_features(features_to_keep, all_features, all_targets)
 
-    print "Lasso to keep", features_to_keep
-
     (valid_features, valid_targets) = mh.extract(valid_filename)
-    (norm_valid_features, norm_valid_targets) = selection.extract_norm(valid_features, valid_targets)
     (sel_valid_features, sel_valid_targets) = selection.extract_features(features_to_keep, valid_features, valid_targets)
 
     test_classifiers(sel_features, sel_targets, sel_valid_features, sel_valid_targets, test_name)
+    print "Lasso to features keep:", features_to_keep
 
 # -------------------------------------------------------------------------
-# TEST: Normalized dataset and Linear feature selection
+# TEST: Raw dataset and Linear feature selection
 # -------------------------------------------------------------------------
 def test_linear_selected_dataset(train_filename, valid_filename):
     test_name = "normalized and Linear feature selection"
     (all_features, all_targets) = mh.extract(train_filename)
-    (norm_features, norm_targets) = selection.extract_norm(all_features, all_targets)
 
     features_to_keep = selection.extract_linear_features_indexes(all_features, all_targets)
     (sel_features, sel_targets) = selection.extract_features(features_to_keep, all_features, all_targets)
 
-    print "Linear to keep", features_to_keep
-
     (valid_features, valid_targets) = mh.extract(valid_filename)
-    (norm_valid_features, norm_valid_targets) = selection.extract_norm(valid_features, valid_targets)
     (sel_valid_features, sel_valid_targets) = selection.extract_features(features_to_keep, valid_features, valid_targets)
 
     test_classifiers(sel_features, sel_targets, sel_valid_features, sel_valid_targets, test_name)
+    print "Linear features to keep:", features_to_keep
 
 def test_classifiers(all_features, all_targets, valid_features, valid_targets, test_name):
     names = [
         # "NB M",
         "NB G",
         "LR",
-        "DT",
-        "KNN",
-        "SVM",
+        # "DT",
+        # "KNN",
+        # "SVM",
         # "LDA",
         # "QDA",
-        "RFrst",
+        # "RFrst",
         "ABoost",
         "Nnet",
         # "ML-LR",
@@ -138,12 +142,12 @@ def test_classifiers(all_features, all_targets, valid_features, valid_targets, t
         # qc.QuoraMultiNB(all_features, all_targets),
         qc.QuoraGaussianNB(all_features, all_targets),
         qc.QuoraLR(all_features, all_targets),
-        qc.QuoraDT(all_features, all_targets),
-        qc.QuoraKNN(all_features, all_targets),
-        qc.QuoraSVC(all_features, all_targets),
+        # qc.QuoraDT(all_features, all_targets),
+        # qc.QuoraKNN(all_features, all_targets),
+        # qc.QuoraSVC(all_features, all_targets),
         # qc.QuoraLDA(all_features, all_targets),
         # qc.QuoraQDA(all_features, all_targets),
-        qc.QuoraRandomForest(all_features, all_targets),
+        # qc.QuoraRandomForest(all_features, all_targets),
         qc.QuoraAdaBoost(all_features, all_targets),
         nnet.QuoraNnet(all_features, all_targets),
         # lr.QuoraMlLR(all_features, all_targets),
@@ -183,11 +187,11 @@ if __name__ == "__main__":
 
     print_dataset_info()
 
-    # test_raw_dataset(train_filename, valid_filename)
-    # test_selected_dataset(train_filename, valid_filename)
-    # test_normalized_dataset(train_filename, valid_filename)
-    # test_normalized_selected_dataset(train_filename, valid_filename)
-    # test_foba_selected_dataset(train_filename, valid_filename)
-    # test_random_forest_selected_dataset(train_filename, valid_filename)
+    test_raw_dataset(train_filename, valid_filename)
+    test_selected_dataset(train_filename, valid_filename)
+    test_normalized_dataset(train_filename, valid_filename)
+    test_normalized_selected_dataset(train_filename, valid_filename)
+    test_foba_selected_dataset(train_filename, valid_filename)
+    test_random_forest_selected_dataset(train_filename, valid_filename)
     test_lasso_selected_dataset(train_filename, valid_filename)
-    test_linear_selected_dataset(train_filename, valid_filename)
+    # test_linear_selected_dataset(train_filename, valid_filename)

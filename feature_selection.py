@@ -3,35 +3,26 @@ from sklearn.svm import LinearSVC
 import numpy as np
 
 EXCLUDED_FEATURES = [0, 8, 9, 2, 21, 22]
-RF_EXCLUDED_FEATURES = [19, 22, 23]
-FOBA_EXCLUDED_FEATURES = [8, 19, 21, 22]
+RF_INCLUDED_FEATURES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20]
+FOBA_INCLUDED_FEATURES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20]
 
 def extract_lasso_features_indexes(matrix_features, vector_targets):
-    clf = linear_model.Lasso(alpha=0.1)
+    clf = linear_model.Lasso(alpha=0.022, fit_intercept=False, max_iter=2000, normalize=False, positive=False, tol=0.001, warm_start=True)
     clf.fit(matrix_features, vector_targets)
 
-    print clf.coef_
-
-    return [i for i, e in enumerate(clf.coef_) if e != 0]
+    return [i for i, e in enumerate(clf.coef_) if e != 0 and abs(e) > 1e-6]
 
 def extract_linear_features_indexes(matrix_features, vector_targets):
     clf = LinearSVC(C=0.01, penalty="l1", dual=False)
     clf.fit(matrix_features, vector_targets)
 
-    # print sel_matrix_features.shape
-    print clf.coef_
-
-    return [i for i, e in enumerate(clf.coef_[0]) if e != 0]
-
-def extract_random_forest_features_indexes(matrix_features, vector_targets):
-    normal_matrix_features = normalize_features(matrix_features)
-    sel_matrix_features = np.delete(normal_matrix_features, RF_EXCLUDED_FEATURES, 1)
-    return (sel_matrix_features, vector_targets)
+    return [i for i, e in enumerate(clf.coef_[0]) if e != 0 and abs(e) > 1e-6]
 
 def extract_foba_features_indexes(matrix_features, vector_targets):
-    normal_matrix_features = normalize_features(matrix_features)
-    sel_matrix_features = np.delete(normal_matrix_features, FOBA_EXCLUDED_FEATURES, 1)
-    return (sel_matrix_features, vector_targets)
+    return FOBA_INCLUDED_FEATURES
+
+def extract_rf_features_indexes(matrix_features, vector_targets):
+    return RF_INCLUDED_FEATURES
 
 def extract_features(included_index, matrix_features, vector_targets):
     return (matrix_features[:,included_index], vector_targets)
