@@ -21,13 +21,13 @@ class QuoraClassifier:
 
     def train(self):
         self.classifier.fit(self.train_features(), self.train_targets())
-        print self.classifier.coef_
 
     def accuracy(self, valid_features, valid_targets):
+        cross_score = self.cross_score()
         valid_score = self.valid_score(valid_features, valid_targets)
         test_score = self.test_score()
-        cross_score = self.cross_score()
-        return "{ valid: %.4f  test: %.4f  cross: %s }" % (valid_score, test_score, cross_score)
+
+        return "{ test: %.4f  valid: %.4f  cross: %s }" % (valid_score, test_score, cross_score)
 
     def valid_score(self, valid_features, valid_targets):
         return self.classifier.score(valid_features, valid_targets)
@@ -102,11 +102,11 @@ class QuoraQDA(QuoraClassifier):
 class QuoraRandomForest(QuoraClassifier):
 
     def __init__(self, all_features, all_targets):
-        classifier = RandomForestClassifier(n_estimators=100)
+        classifier = RandomForestClassifier(n_estimators=200)
         QuoraClassifier.__init__(self, classifier, all_features, all_targets)
 
 class QuoraAdaBoost(QuoraClassifier):
 
     def __init__(self, all_features, all_targets):
-        classifier = AdaBoostClassifier(n_estimators=100)
+        classifier = AdaBoostClassifier(n_estimators=200)
         QuoraClassifier.__init__(self, classifier, all_features, all_targets)
