@@ -1,7 +1,11 @@
 import numpy as np
 import re
 
+
 def extract(filename):
+    """
+    Basic pre-processing logic to load dataset information.
+    """
     input_file = open(filename)
     traindata = input_file.readlines()
     features = []
@@ -20,7 +24,4 @@ def extract(filename):
 
     input_file.close()
 
-    return (matrix_features, vector_targets)
-
-def accuracy(targets_hat, targets):
-    return (1.0 * (targets_hat == targets)).sum(0) / targets.shape
+    return matrix_features, vector_targets

@@ -7,7 +7,11 @@ from sklearn.base import ClassifierMixin
 from sklearn.externals import six
 from abc import ABCMeta
 
+
 class QuoraNnet(qc.QuoraClassifier):
+    """
+    Class encapsulating a custom implementation of a Neural Network classifier.
+    """
 
     def __init__(self, all_features, all_targets):
         classifier = Brain()
@@ -15,6 +19,10 @@ class QuoraNnet(qc.QuoraClassifier):
 
 
 class Brain(six.with_metaclass(ABCMeta, BaseEstimator, ClassifierMixin)):
+    """
+    Custom implementation of a Feed Forward Neural Network
+    done during the second assignment of the course CSC2515.
+    """
 
     def __init__(self, batch_size=200, eps=0.5, momentum=0.7, l2=0.01, hidden_units=300, num_layers=1, max_epochs=50):
         self.batch_size = batch_size
@@ -25,12 +33,22 @@ class Brain(six.with_metaclass(ABCMeta, BaseEstimator, ClassifierMixin)):
         self.num_layers = num_layers
         self.max_epochs = max_epochs
 
+    def score(self, features, targets):
+        """
+        Compute the score associated to the provided dataset. It follows the
+        protocol imposed by scikit-learn classifiers (BaseEstimator).
+        """
+
+        validation_accuracy, log_p = self.nnet.test(features.T, self.expand(targets))
+        return validation_accuracy
+
     def fit(self, train_features, train_targets, valid_features=None, valid_targets=None):
+        """
+        Train the current classifier.
+        """
+
         train_features = train_features
         train_targets = self.expand(train_targets)
-
-        # print "train_features", train_features.shape
-        # print "train_targets", train_targets.shape
 
         # Definition of multi layer neural network
         lst_def = self.create_layers_def(train_features, train_targets, self.num_layers, self.hidden_units)
@@ -45,26 +63,30 @@ class Brain(six.with_metaclass(ABCMeta, BaseEstimator, ClassifierMixin)):
             if self.should_stop_training(i+1, stopper, valid_features, valid_targets):
                 break
 
-    def score(self, features, targets):
-        validation_accuracy, log_p = self.nnet.test(features.T, self.expand(targets))
-        return validation_accuracy
-
     def expand(self, array):
         return np.hstack((np.vstack((array+1)/2), np.vstack((array-1)/-2)))
 
     def should_stop_training(self, epoch, stopper, valid_features, valid_targets):
+        """
+        Check if the training process should stop (prevent Neural Network
+        from overfitting).
+        """
+
         if not valid_targets or not valid_features:
             return False
 
         validation_accuracy, log_p = self.nnet.test(valid_features, valid_targets)
         validation_error = 100 - validation_accuracy
 
-        # -------------------------------------------------------------------------
         # early stopping strategy for controlling over-fitting
-        # -------------------------------------------------------------------------
         return stopper.should_early_stop(epoch, validation_error)
 
     def create_layers_def(self, features, targets, num_layers, hidden_units):
+        """
+        Create a layer definition given basic parameters that will
+        define the current Neural Network.
+        """
+
         lst_def = []
         in_layer_def = LayerDefinition.new_sigmoid_definition("Layer_in", features.shape[1], hidden_units)
         lst_def.append(in_layer_def)
@@ -82,6 +104,9 @@ class Brain(six.with_metaclass(ABCMeta, BaseEstimator, ClassifierMixin)):
 
 
 class EarlyStopper:
+    """
+    Early stopping mechanism implementation.
+    """
 
     def __init__(self):
         self.epochs_to_consider = 3
@@ -90,6 +115,10 @@ class EarlyStopper:
         self.best_validation_error = 100
 
     def should_early_stop(self, epoch, validation_error):
+        """
+        Check the need of stopping training according to validation error.
+        """
+
         should_stop = False
         if validation_error >= self.best_validation_error:
             self.occurrence += 1
@@ -107,6 +136,10 @@ class EarlyStopper:
 
 
 class NNet(object):
+    """
+    Neural Network object containing a customizable number of layers of input,
+    output and hidden units.
+    """
 
     def __init__(self, lst_def):
         self._layers = []
@@ -130,6 +163,10 @@ class NNet(object):
         return self._lst_num_hid[-1]
 
     def fwd_prop(self, data):
+        """
+        Forward propagation logic across the Neural Network.
+        """
+
         lst_layer_outputs = []
         current_layer_output = data
 
@@ -140,6 +177,10 @@ class NNet(object):
         return lst_layer_outputs
 
     def back_prop(self, lst_layer_outputs, data, targets):
+        """
+        Back propagation logic across the Neural Network.
+        """
+
         layers_outputs = lst_layer_outputs[::-1]
         layers = self._lst_layers[::-1]
 
@@ -159,6 +200,10 @@ class NNet(object):
                 output_grad = input_grad
 
     def apply_gradients(self, eps, momentum, l2, batch_size):
+        """
+        Gradient update logic across the Neural Network.
+        """
+
         for layer in self._lst_layers:
             layer.apply_gradients(momentum, eps, l2, batch_size)
 
@@ -169,17 +214,16 @@ class NNet(object):
         num_pts = valid_targets.shape[0]
         lst_layer_outputs = self.fwd_prop(valid_features)
 
-        # print "Data", valid_features.shape
-        # print "Target", valid_targets.shape
-        # print "Got", lst_layer_outputs[-1]
-        # print "Exp", valid_targets.T
-
-        num_correct, log_prob = self._lst_layers[-1].compute_accuraccy(lst_layer_outputs[-1], valid_targets.T)
+        num_correct, log_prob = self._lst_layers[-1].compute_accuracy(lst_layer_outputs[-1], valid_targets.T)
         classification_error = (num_pts - num_correct)*1.0/num_pts
 
         return 1 - classification_error, log_prob*1./num_pts
 
     def train_for_one_epoch(self, features, targets, eps, momentum, l2, batch_size):
+        """
+        Training logic for one epoch.
+        """
+
         try:
             self.__cur_epoch += 1
         except AttributeError:
@@ -197,19 +241,11 @@ class NNet(object):
             batch += 1
             num_pts += batch_size
 
-            # print "Batch chuck_feature", chuck_feature.shape
-            # print "Batch chunk_target", chunk_target.shape
-
             lst_layer_outputs = self.fwd_prop(chuck_feature)
 
-            # print "Got", lst_layer_outputs[-1]
-            # print "Exp", chunk_target
-
-            num_correct, log_prob = self._lst_layers[-1].compute_accuraccy(lst_layer_outputs[-1], chunk_target)
+            num_correct, log_prob = self._lst_layers[-1].compute_accuracy(lst_layer_outputs[-1], chunk_target)
             classif_err_sum += (chuck_feature.shape[1] - num_correct)
             lg_p_sum += log_prob
-
-            # print "Batch classif error" classif_err_sum
 
             self.back_prop(lst_layer_outputs, chuck_feature, chunk_target)
             self.apply_gradients(eps, momentum, l2, batch_size)
@@ -217,8 +253,6 @@ class NNet(object):
 
         classification_error = classif_err_sum*100./num_pts
 
-        # sys.stderr.write("Epoch = %d, batch = %d, Classif Acc = %.3f, lg(p) %.4f\n"%(\
-        #            self.__cur_epoch, batch, 100-classification_error, lg_p_sum*1./num_pts))
         sys.stderr.flush()
 
         return classification_error
@@ -232,13 +266,17 @@ class NNet(object):
 
 
 class LayerDefinition(object):
+    """
+    Simple and alternative implementation of a Builder Pattern for Neural
+    Network layers.
+    """
 
     SIGMOID_LAYER = 0
     SOFTMAX_LAYER = 1
 
     def __init__(self, name, layer_type, input_dim, num_units, wt_sigma):
         self.name, self.layer_type, self.input_dim, self.num_units, \
-        self.wt_sigma  =  name, layer_type, input_dim, num_units, wt_sigma
+            self.wt_sigma = name, layer_type, input_dim, num_units, wt_sigma
 
     def create_layer(self):
         layer = None
@@ -247,7 +285,7 @@ class LayerDefinition(object):
         elif self.layer_type == LayerDefinition.SOFTMAX_LAYER:
             layer = SoftmaxLayer(self)
         else:
-            raise Exception, "Unknown layer type"
+            raise Exception("Unknown layer type")
         return layer
 
     @staticmethod
@@ -260,6 +298,9 @@ class LayerDefinition(object):
 
 
 class Layer(object):
+    """
+    Class representing a layer in the Neural Network.
+    """
 
     def __init__(self, layer_def):
         self.name = layer_def.name
@@ -290,6 +331,10 @@ class Layer(object):
         return self._wts.shape[0]
 
     def apply_gradients(self, momentum, eps, l2, batch_size):
+        """
+        General implementation for the gradients update rule in the layer.
+        """
+
         w_momentum = momentum * self._wts_inc
         b_momentum = momentum * self._b_inc
 
@@ -306,6 +351,10 @@ class Layer(object):
         self._b += self._b_inc
 
     def back_prop(self, act_grad, prev_layer_outputs):
+        """
+        General implementation for the layer back propagation.
+        """
+
         self._wts_grad = np.dot(prev_layer_outputs, act_grad.T)
         self._b_grad = act_grad.sum(1)[:, np.newaxis]
         input_grad = np.dot(self._wts, act_grad)
@@ -314,11 +363,14 @@ class Layer(object):
 
 
 class SigmoidLayer(Layer):
-    pass
+    """
+    Sigmoid implementation of a Neural Network layer (hidden units layer).
+    """
 
     def fwd_prop(self, data):
-        # print "Data", data.shape
-        # print "Weights", self._wts.shape
+        """
+        Specific logic for the forward propagation algorithm of the layer.
+        """
 
         a = np.dot(data.T, self._wts) + self._b.T
         outputs = self.sigmoid(a)
@@ -331,19 +383,37 @@ class SigmoidLayer(Layer):
         return act_grad * output_grad
 
     def sigmoid(self, x):
+        """
+        Compute a sigmoid function given an input vector.
+        """
+
         return 1.0 / (1 + np.exp(-x))
 
     def dsigmoid(self, x):
+        """
+        Compute a dsigmoid function given an input vector.
+        """
+
         return x * (1.0 - x)
 
     def is_softmax(self):
+        """
+        Check if the current layer is a softmax layer.
+        """
+
         return False
 
 
 class SoftmaxLayer(Layer):
-    pass
+    """
+    Sofmax implementation of a Neural Network layer (output layer).
+    """
 
     def fwd_prop(self, data):
+        """
+        Specific logic for the forward propagation algorithm of the layer.
+        """
+
         a = np.dot(data.T, self._wts) + self._b.T
         outputs = self.softmax(a)
 
@@ -355,19 +425,23 @@ class SoftmaxLayer(Layer):
         return act_grad
 
     def softmax(self, x):
+        """
+        Compute a softmax function given an input vector.
+        """
+
         exp_x_sum = np.vstack(np.exp(x).sum(1))
         return 1.0 * np.exp(x) / exp_x_sum
 
     def is_softmax(self):
+        """
+        Check if the current layer is a softmax layer.
+        """
+
         return True
 
     @staticmethod
-    def compute_accuraccy(probs, label_mat):
-        # print "Gets", probs.argmax(axis=0)
-        # print "Expects", label_mat.argmax(axis=0)
+    def compute_accuracy(probabilities, label_mat):
+        num_correct = np.sum(probabilities.argmax(axis=0) == label_mat.argmax(axis=0))
+        log_probs = np.sum(np.log(probabilities) * label_mat)
 
-        num_correct = np.sum(probs.argmax(axis=0) == label_mat.argmax(axis=0))
-        log_probs = np.sum(np.log(probs) * label_mat)
-
-        # print "Logs", log_probs
         return num_correct, log_probs
