@@ -5,6 +5,10 @@ In this work, we present a detailed study on the Quora Answer Classifier Challen
 
 Further, we not only propose a solution to the classification problem, but also use the provided dataset in order to compare different classifiers (Naive Bayes, Logistic Regression, Neural Network and AdaBoost). We demonstrate the benefit of pre-processing methods such as normalization, Forward Backward Greedy Feature Selection, Random Forest Feature Selection and Lasso Feature Selection by achieving a classification accuracy of 81.4% using a simple Logistic Regression classifier, third greatest score in the contest. More information about the challenge can be obtained [here](https://www.quora.com/challenges#answer_classifier).
 
+## Developers
+ - Amanjot Kaur
+ - Guilherme Trein
+
 ## Running the simulation
 The simulation script is straightforward. The `quora.py` is the entry point of the simulation and contains several experiments that were studied in order to propose a simple solution to the Quora Answer Classifier. To run the simulation, issue the command:
 
