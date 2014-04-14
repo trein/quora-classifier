@@ -23,3 +23,4 @@ We are grateful to Kevin Swersky for guiding us through the problem, and many he
  - [Richard Zemel](http://www.cs.toronto.edu/~zemel), Professor Dept. of Computer Science at University of Toronto, CSC2515 (Fall 2013)
  - [Kevin Swersky](http://www.cs.toronto.edu/~kswersky/), Ph.D. Student at University of Toronto and TA of CSC2515 (Fall 2013).
  - [Navdeep Jaitly](http://www.cs.toronto.edu/~ndjaitly/), Ph.D. Student at University of Toronto and TA of CSC2515 (Fall 2013).
+
